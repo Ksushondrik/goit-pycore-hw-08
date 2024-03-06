@@ -3,11 +3,11 @@ def input_error(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except ValueError as e:
+        except ValueError:
             return "Enter the argument for the command. Give me name and phone or birthday, please."
-        except KeyError as e:
+        except KeyError:
             return "No such name found"
-        except IndexError as e :
+        except IndexError:
             return "Enter the argument for the command. Give me name, please."
         except Exception as e:
             return f"Error: {e}"

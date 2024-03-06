@@ -1,6 +1,6 @@
 import decor as de
-from classes import AddressBook, Record, Birthday
-from datetime import datetime, timedelta
+from classes import AddressBook, Record
+import pickle
 
 
 def parse_input(user_input):
@@ -95,3 +95,16 @@ def soon_birthdays(book: AddressBook):
             s = f"|| {a:>15} | {b:>20} | {c:>20} ||"
             print(s)
         return f"It's all!"
+
+
+def save_data(book, filename="addressbook.pkl"):
+    with open(filename, "wb") as file:
+        pickle.dump(book, file)
+
+
+def load_data(filename="addressbook.pkl"):
+    try:
+        with open(filename, "rb") as file:
+            return pickle.load(file)
+    except FileNotFoundError:
+        return AddressBook()        # Повернення нової адресної книги, якщо файл не знайдено
