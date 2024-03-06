@@ -20,7 +20,7 @@ class Name(Field):
     # реалізація класу
     def __init__(self, value: str):
         if not value.strip():
-            raise ValueError("You entered an empty string!")
+            raise Exception("You entered an empty string!")
         else:
             super().__init__(value)
 
@@ -29,7 +29,7 @@ class Name(Field):
 class Phone(Field):
     def __init__(self, value: str):
         if not ((value.isdigit()) and (len(value) == 10)):
-            raise ValueError("Incorrect phone format! Phone not added!")
+            raise Exception("Incorrect phone format! Phone not added!")
         else:
             super().__init__(value)
 
@@ -42,8 +42,10 @@ class Birthday(Field):
                 super().__init__(value)
                 # та перетворіть рядок на об'єкт datetime
                 datetime.strptime(value, "%d.%m.%Y")
-        except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
+            else:
+                raise Exception("Invalid date format. Use DD.MM.YYYY")
+        except Exception as e:
+            raise Exception("Invalid date format. Use DD.MM.YYYY") from e
 
 
 # Клас для зберігання інформації про контакт, включаючи ім'я та список телефонів
@@ -66,7 +68,7 @@ class Record:
                 self.phones[self.phones.index(number)] = Phone(new_phone)
                 break
         else:
-            raise ValueError(f"Phone {phone} is not found in contact {self.name}")
+            raise Exception(f"Phone {phone} is not found in contact {self.name}")
 
     # Пошук телефону
     def find_phone(self, phone: str):
@@ -105,8 +107,28 @@ class AddressBook(UserDict):
         if name in self.data:
             del self.data[name]
 
-    def get_upcoming_birthdays(self):
-        pass
+    def get_upcoming_birthdays(self) -> list:
+        today = datetime.today().date()
+        congratulation_list = []
+        for name, record in self.data.items():
+            if isinstance(record.birthday, Birthday):
+                birthday = record.birthday.value
+                birthday = birthday[:6] + str(today.year)
+                birthday = (datetime.strptime(birthday, "%d.%m.%Y")).date()
+                if 0 <= (birthday - today).days <= 7:  # перевіряємо, чи наступає дата впродовж тижня, включаючи поточний день
+                    day_week = (birthday.weekday())  # отримуємо день тижня, на який припадає день народження
+                    user_dict = {"Name": name, "Birthday": birthday.strftime("%Y.%m.%d"), }  # створюємо словник з іменем користувача та датою народження
+                    if day_week == 5:  # перевіряємо чи не випадає на субботу
+                        congratulations_day = birthday + timedelta(days=2)  # день для привітання на 2 дні пізніше, якщо так
+                    elif day_week == 6:  # перевіряємо чи не випадає на неділю
+                        congratulations_day = birthday + timedelta(days=1)  # день для привітання на день пізніше, якщо так
+                    else:  # всі інші припадають на будній день
+                        congratulations_day = birthday  # вітати треба в той же день
+                    user_dict["Day_for_greetings"] = congratulations_day.strftime("%Y.%m.%d")  # додаємо до словника день привітання
+                    congratulation_list.append(user_dict)  # додаємо в список результатів
+            else:
+                continue
+        return congratulation_list
 
 
 if __name__ == "__main__":

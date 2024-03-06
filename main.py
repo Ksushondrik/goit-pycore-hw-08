@@ -1,8 +1,9 @@
 import functions as fu
+from classes import AddressBook
 
 
 def main():
-    book = fu.load_data()
+    book = AddressBook()
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
@@ -20,8 +21,8 @@ def main():
             print("change [old_phone] [new_phone]")
             print("phone [name]")
             print("all")
-            print("add-birthday [name] [birthday]")
-            print("show-birthday [name]")
+            print("add_b_day [name] [birthday]")
+            print("show_b_day [name]")
             print("birthdays")
             print("exit/close")
         elif command == "add":
@@ -40,7 +41,6 @@ def main():
             print(fu.soon_birthdays(book))
         else:
             print("Invalid command. Enter 'help' for help)")
-    fu.save_data(book)
 
 
 if __name__ == "__main__":
